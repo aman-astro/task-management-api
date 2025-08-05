@@ -72,7 +72,7 @@ class Api::V1::TasksController < Api::V1::BaseController
 
   # DELETE /api/v1/tasks/:id
   def destroy
-    @task.destroy
+    @task.soft_delete
     render_success(
       nil,
       'Task deleted successfully'
