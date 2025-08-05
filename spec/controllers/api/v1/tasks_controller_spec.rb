@@ -43,20 +43,20 @@ describe Api::V1::TasksController, type: :controller do
   describe 'POST #create' do
     it 'creates a task with valid params' do
       expect {
-        post :create, params: { task: { title: 'New Task', project_id: project.id } }
+        post :create, params: { project_id: project.id, task: { title: 'New Task' } }
       }.to change(Task, :count).by(1)
       expect(response).to have_http_status(:created)
     end
     it 'does not create a task with invalid params' do
       expect {
-        post :create, params: { task: { title: '', project_id: project.id } }
+        post :create, params: { project_id: project.id, task: { title: '' } }
       }.not_to change(Task, :count)
       expect(response).to have_http_status(:unprocessable_entity)
     end
     it 'returns not found for project not owned by user' do
       other_project = Project.create!(title: 'Other Project', user: other_user)
       expect {
-        post :create, params: { task: { title: 'Hacked', project_id: other_project.id } }
+        post :create, params: { project_id: other_project.id, task: { title: 'Hacked' } }
       }.not_to change(Task, :count)
       expect(response).to have_http_status(:not_found)
     end

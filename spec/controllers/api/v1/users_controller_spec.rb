@@ -33,6 +33,7 @@ describe Api::V1::UsersController, type: :controller do
   end
 
   describe 'PUT #update' do
+    before { allow(controller).to receive(:current_user).and_return(user) }
     it 'updates a user with valid params' do
       put :update, params: { id: user.id, user: { name: 'Updated Name' } }
       expect(response).to have_http_status(:ok)
@@ -45,6 +46,7 @@ describe Api::V1::UsersController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
+    before { allow(controller).to receive(:current_user).and_return(user) }
     it 'deletes a user' do
       expect {
         delete :destroy, params: { id: user.id }
