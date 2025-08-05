@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class RegistrationsController < Devise::RegistrationsController
+  include JsonResponse
+  
   respond_to :json
   skip_before_action :verify_authenticity_token
   skip_before_action :authenticate_request
@@ -25,17 +27,9 @@ class RegistrationsController < Devise::RegistrationsController
 
     if resource.save
       sign_up(resource_name, resource)
-      render json: {
-        status: 'success',
-        message: 'User created successfully',
-        data: UserSerializer.new(resource)
-      }, status: :created
+      render_success(UserSerializer.new(resource), 'User created successfully', :created)
     else
-      render json: {
-        status: 'error',
-        message: 'User creation failed',
-        errors: resource.errors.full_messages
-      }, status: :unprocessable_entity
+      render_error('User creation failed', resource.errors.full_messages)
     end
   end
 
@@ -48,17 +42,9 @@ class RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      render json: {
-        status: 'success',
-        message: 'User created successfully',
-        data: UserSerializer.new(resource)
-      }, status: :created
+      render_success(UserSerializer.new(resource), 'User created successfully', :created)
     else
-      render json: {
-        status: 'error',
-        message: 'User creation failed',
-        errors: resource.errors.full_messages
-      }, status: :unprocessable_entity
+      render_error('User creation failed', resource.errors.full_messages)
     end
   end
 end

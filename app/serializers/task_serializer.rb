@@ -13,9 +13,4 @@ class TaskSerializer < ActiveModel::Serializer
   attribute :comments_count do
     object.comments.count
   end
-  
-  # Check if task is overdue
-  attribute :is_overdue do
-    object.due_date.present? && object.due_date < Time.current && object.status != 'completed'
-  end
 end

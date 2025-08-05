@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SessionsController < Devise::SessionsController
+  include JsonResponse
+  
   respond_to :json
   skip_before_action :verify_authenticity_token
   skip_before_action :authenticate_request
@@ -26,18 +28,13 @@ class SessionsController < Devise::SessionsController
     
     if command.success?
       user = User.find_by(email: email)
-      render json: {
-        status: 'success',
-        message: 'Logged in successfully',
+      data = {
         auth_token: command.result,
         user: UserSerializer.new(user)
-      }, status: :ok
+      }
+      render_success(data, 'Logged in successfully')
     else
-      render json: {
-        status: 'error',
-        message: 'Invalid email or password',
-        errors: command.errors
-      }, status: :unauthorized
+      render_unauthorized('Invalid email or password')
     end
   end
 
@@ -45,26 +42,16 @@ class SessionsController < Devise::SessionsController
   def destroy
     # Since we're using stateless JWT, logout is handled client-side
     # by removing the token from client storage
-    render json: {
-      status: 'success',
-      message: 'Logged out successfully'
-    }, status: :ok
+    render_success(nil, 'Logged out successfully')
   end
 
   private
 
   def respond_with(resource, _opts = {})
-    render json: {
-      status: 'success',
-      message: 'Logged in successfully',
-      data: UserSerializer.new(resource)
-    }, status: :ok
+    render_success(UserSerializer.new(resource), 'Logged in successfully')
   end
 
   def respond_to_on_destroy
-    render json: {
-      status: 'success',
-      message: 'Logged out successfully'
-    }, status: :ok
+    render_success(nil, 'Logged out successfully')
   end
 end
