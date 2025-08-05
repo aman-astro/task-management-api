@@ -43,10 +43,10 @@ class Api::V1::TasksController < Api::V1::BaseController
     )
   end
 
-  # POST /api/v1/tasks
+  # POST /api/v1/projects/:project_id/tasks
   def create
-    @project = current_user.projects.find(task_params[:project_id])
-    @task = @project.tasks.build(task_params.except(:project_id))
+    @project = current_user.projects.find(params[:project_id])
+    @task = @project.tasks.build(task_params)
 
     if @task.save
       render_success(
@@ -145,6 +145,6 @@ class Api::V1::TasksController < Api::V1::BaseController
   end
 
   def task_params
-    params.require(:task).permit(:title, :description, :status, :due_date, :project_id)
+    params.require(:task).permit(:title, :description, :status, :due_date)
   end
 end

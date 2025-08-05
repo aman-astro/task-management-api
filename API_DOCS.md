@@ -164,7 +164,7 @@
 - **Response:** 200 OK, task info
 
 ### Create Task
-- **POST** `/api/v1/tasks`
+- **POST** `/api/v1/projects/:project_id/tasks`
 - **Headers:** `Authorization: Bearer <token>`
 - **Body:**
   ```json
@@ -173,8 +173,7 @@
       "title": "Task Title",
       "description": "Task description",
       "due_date": "2024-08-01",
-      "status": "pending",
-      "project_id": 1
+      "status": "pending"
     }
   }
   ```
@@ -248,6 +247,30 @@
 ### Delete Comment
 - **DELETE** `/api/v1/comments/:id`
 - **Headers:** `Authorization: Bearer <token>`
+- **Response:** 200 OK, success message
+
+---
+
+## Users
+
+### Update User (Profile)
+- **PUT/PATCH** `/api/v1/users/:id`
+- **Headers:** `Authorization: Bearer <token>`
+- **Body:**
+  ```json
+  {
+    "user": {
+      "name": "New Name"
+    }
+  }
+  ```
+- **Note:** Only the current user can update their own profile. Attempting to update another user will return an unauthorized error.
+- **Response:** 200 OK, updated user info
+
+### Delete User (Profile)
+- **DELETE** `/api/v1/users/:id`
+- **Headers:** `Authorization: Bearer <token>`
+- **Note:** Only the current user can delete their own profile. Attempting to delete another user will return an unauthorized error.
 - **Response:** 200 OK, success message
 
 ---

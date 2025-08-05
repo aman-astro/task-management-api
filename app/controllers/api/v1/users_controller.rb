@@ -21,6 +21,7 @@ class Api::V1::UsersController < Api::V1::BaseController
 
   # PATCH/PUT /api/v1/users/:id
   def update
+    return render_unauthorized('You can only update your own profile') unless @user == current_user
     if @user.update(user_params)
       render_success(
         UserSerializer.new(@user),
@@ -37,6 +38,7 @@ class Api::V1::UsersController < Api::V1::BaseController
 
   # DELETE /api/v1/users/:id
   def destroy
+    return render_unauthorized('You can only delete your own profile') unless @user == current_user
     @user.destroy
     render_success(
       nil,
