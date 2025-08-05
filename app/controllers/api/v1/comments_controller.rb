@@ -1,14 +1,32 @@
 class Api::V1::CommentsController < Api::V1::BaseController
   before_action :set_comment, only: [:show, :update, :destroy]
 
-  # GET /api/v1/comments
-  def index
+  # GET /api/v1/comments/task_id/:task_id
+  def by_task
+    # Verify the task belongs to the current user
+    @task = Task.joins(:project)
+                .where(projects: { user: current_user })
+                .find(params[:task_id])
+    
+    @comments = @task.comments.includes(:user)
+    render_success(
+      @comments.map { |comment| CommentSerializer.new(comment) },
+      'Comments for task retrieved successfully'
+    )
+  rescue ActiveRecord::RecordNotFound
+    render_not_found('Task not found or you do not have access to it')
+  end
+
+  # GET /api/v1/comments/user_id/:user_id
+  def by_user
+    # Get comments by user, but only for tasks that belong to the current user's projects
     @comments = Comment.joins(task: :project)
                        .where(projects: { user: current_user })
+                       .where(user_id: params[:user_id])
                        .includes(:user, :task)
     render_success(
       @comments.map { |comment| CommentSerializer.new(comment) },
-      'Comments retrieved successfully'
+      'Comments by user retrieved successfully'
     )
   end
 

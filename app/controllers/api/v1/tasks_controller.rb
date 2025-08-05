@@ -1,14 +1,27 @@
 class Api::V1::TasksController < Api::V1::BaseController
   before_action :set_task, only: [:show, :update, :destroy]
 
-  # GET /api/v1/tasks
+  # GET /api/v1/projects/:project_id/tasks
   def index
-    @tasks = Task.joins(:project).where(projects: { user: current_user })
-                 .includes(:project, :comments)
+    # Project ID is required
+    unless params[:project_id].present?
+      render_not_found('Project not found')
+      return
+    end
+
+    # Get project-specific tasks only
+    @project = current_user.projects.find(params[:project_id])
+    @tasks = @project.tasks.includes(:project, :comments)
+    
+    # Apply filters based on query parameters
+    @tasks = apply_filters(@tasks)
+    
     render_success(
       @tasks.map { |task| TaskSerializer.new(task) },
       'Tasks retrieved successfully'
     )
+  rescue ActiveRecord::RecordNotFound
+    render_not_found('Project not found')
   end
 
   # GET /api/v1/tasks/:id
@@ -74,6 +87,31 @@ class Api::V1::TasksController < Api::V1::BaseController
                 .find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_not_found('Task not found or you do not have access to it')
+  end
+
+  def apply_filters(tasks)
+    # Filter by status if provided
+    if params[:status].present?
+      # Support multiple statuses separated by comma
+      statuses = params[:status].split(',').map(&:strip)
+      # Validate that all statuses are valid
+      valid_statuses = statuses.select { |status| Task.statuses.key?(status) }
+      
+      if valid_statuses.any?
+        tasks = tasks.where(status: valid_statuses)
+      end
+    end
+
+    # Filter by due date if provided (tasks due before this date)
+    if params[:due_date].present?
+      begin
+        tasks = tasks.where('due_date < ?', Date.parse(params[:due_date]))
+      rescue ArgumentError
+        # Invalid date format, ignore filter
+      end
+    end
+
+    tasks
   end
 
   def task_params
