@@ -15,9 +15,20 @@ class Api::V1::TasksController < Api::V1::BaseController
     
     # Apply filters based on query parameters
     @tasks = apply_filters(@tasks)
-    
+
+    # Pagination
+    @tasks = @tasks.page(params[:page]).per(params[:per_page] || 10)
+
     render_success(
-      @tasks.map { |task| TaskSerializer.new(task) },
+      {
+        tasks: @tasks.map { |task| TaskSerializer.new(task) },
+        pagination: {
+          current_page: @tasks.current_page,
+          total_pages: @tasks.total_pages,
+          total_count: @tasks.total_count,
+          per_page: @tasks.limit_value
+        }
+      },
       'Tasks retrieved successfully'
     )
   rescue ActiveRecord::RecordNotFound
@@ -83,8 +94,17 @@ class Api::V1::TasksController < Api::V1::BaseController
   def all
     @tasks = Task.joins(:project).where(projects: { user: current_user }).includes(:project, :comments)
     @tasks = apply_filters(@tasks)
+    @tasks = @tasks.page(params[:page]).per(params[:per_page] || 10)
     render_success(
-      @tasks.map { |task| TaskSerializer.new(task) },
+      {
+        tasks: @tasks.map { |task| TaskSerializer.new(task) },
+        pagination: {
+          current_page: @tasks.current_page,
+          total_pages: @tasks.total_pages,
+          total_count: @tasks.total_count,
+          per_page: @tasks.limit_value
+        }
+      },
       'All tasks retrieved successfully'
     )
   end
