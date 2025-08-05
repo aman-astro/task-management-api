@@ -71,4 +71,6 @@ A Ruby on Rails API-only application for managing projects, tasks, and comments 
 
 ---
 
-For API usage and details, see comments in the code and controller specs, or refer to `API_DOCS.md`.
+For API usage and details, see the documentation in the `docs/` directory, which includes:
+- `API_DOCS.md` for detailed API documentation
+- `Task Management APIs.postman_collection.json` for a ready-to-use Postman collection
