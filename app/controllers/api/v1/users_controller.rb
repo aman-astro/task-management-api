@@ -1,4 +1,5 @@
 class Api::V1::UsersController < Api::V1::BaseController
+  skip_before_action :authenticate_request, only: [:forgot_password, :reset_password]
   before_action :set_user, only: [:show, :update, :destroy]
 
   # GET /api/v1/users
