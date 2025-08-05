@@ -79,6 +79,16 @@ class Api::V1::TasksController < Api::V1::BaseController
     )
   end
 
+  # GET /api/v1/tasks/all
+  def all
+    @tasks = Task.joins(:project).where(projects: { user: current_user }).includes(:project, :comments)
+    @tasks = apply_filters(@tasks)
+    render_success(
+      @tasks.map { |task| TaskSerializer.new(task) },
+      'All tasks retrieved successfully'
+    )
+  end
+
   private
 
   def set_task

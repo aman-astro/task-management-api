@@ -15,6 +15,11 @@ Rails.application.routes.draw do
       resources :projects do
         resources :tasks
       end
+      resources :tasks do
+        collection do
+          get 'all', to: 'tasks#all'
+        end
+      end
       resources :comments, except: [:index] do
         collection do
           get 'task_id/:task_id', to: 'comments#by_task'
