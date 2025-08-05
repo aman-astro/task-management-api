@@ -16,7 +16,7 @@ describe Api::V1::TasksController, type: :controller do
       get :index, params: { project_id: project.id }
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json['data'].first['id']).to eq(task.id)
+      expect(json['data']['tasks'].first['id']).to eq(task.id)
     end
     it 'returns not found for project not owned by user' do
       other_project = Project.create!(title: 'Other Project', user: other_user)
@@ -99,7 +99,7 @@ describe Api::V1::TasksController, type: :controller do
       get :all
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
-      expect(json['data'].map { |t| t['id'] }).to include(task.id)
+      expect(json['data']['tasks'].map { |t| t['id'] }).to include(task.id)
     end
   end
 end
