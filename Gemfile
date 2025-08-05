@@ -32,8 +32,11 @@ gem "jbuilder"
 # Devise for authentication [https://github.com/heartcombo/devise]
 gem "devise"
 
-# JWT support for Devise [https://github.com/waiting-for-dev/devise-jwt]
-gem "devise-jwt"
+# JWT for API authentication [https://github.com/jwt/ruby-jwt]
+gem "jwt"
+
+# SimpleCommand for service objects [https://github.com/nebulab/simple_command]
+gem "simple_command"
 
 # ActiveModel::Serializers for clean JSON responses [https://github.com/rails-api/active_model_serializers]
 gem "active_model_serializers"

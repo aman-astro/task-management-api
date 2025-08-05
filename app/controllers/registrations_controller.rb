@@ -3,6 +3,7 @@
 class RegistrationsController < Devise::RegistrationsController
   respond_to :json
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_request
   before_action :configure_sign_up_params, only: [:create]
   
   # Tell Devise this controller handles User model

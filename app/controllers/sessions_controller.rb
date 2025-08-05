@@ -3,6 +3,7 @@
 class SessionsController < Devise::SessionsController
   respond_to :json
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_request
   
   # Tell Devise this controller handles User model
   def resource_name
@@ -17,39 +18,37 @@ class SessionsController < Devise::SessionsController
     @devise_mapping ||= Devise.mappings[:user]
   end
 
-  # POST /users/sign_in (Login)
+  # POST /login
   def create
-    user = User.find_by(email: params[:user][:email])
+    email = params[:user][:email]
+    password = params[:user][:password]
+    command = AuthenticateUser.call(email, password)
     
-    if user&.valid_password?(params[:user][:password])
-      sign_in(user)
+    if command.success?
+      user = User.find_by(email: email)
       render json: {
         status: 'success',
         message: 'Logged in successfully',
-        data: UserSerializer.new(user)
+        auth_token: command.result,
+        user: UserSerializer.new(user)
       }, status: :ok
     else
       render json: {
         status: 'error',
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
+        errors: command.errors
       }, status: :unauthorized
     end
   end
 
-  # DELETE /users/sign_out (Logout)
+  # DELETE /logout
   def destroy
-    if current_user
-      sign_out(current_user)
-      render json: {
-        status: 'success',
-        message: 'Logged out successfully'
-      }, status: :ok
-    else
-      render json: {
-        status: 'error',
-        message: 'No active session found'
-      }, status: :unauthorized
-    end
+    # Since we're using stateless JWT, logout is handled client-side
+    # by removing the token from client storage
+    render json: {
+      status: 'success',
+      message: 'Logged out successfully'
+    }, status: :ok
   end
 
   private

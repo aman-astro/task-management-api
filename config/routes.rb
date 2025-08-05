@@ -12,7 +12,11 @@ Rails.application.routes.draw do
   # API routes
   namespace :api do
     namespace :v1 do
-      # API endpoints will go here
+      resources :projects do
+        resources :tasks
+      end
+      resources :tasks
+      resources :comments
     end
   end
 
