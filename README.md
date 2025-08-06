@@ -6,7 +6,7 @@ A Ruby on Rails API-only application for managing projects, tasks, and comments 
 
 1. **Clone the repository:**
    ```sh
-   git clone <your-repo-url>
+   git clone git@github.com:aman-astro/task-management-api.git
    cd task-management-api
    ```
 
