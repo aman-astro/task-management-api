@@ -56,7 +56,7 @@ A Ruby on Rails API-only application for managing projects, tasks, and comments 
   - Each project has a title and description
 - **Tasks**
   - Each project can have multiple tasks
-  - Task attributes: `title`, `description`, `due_date`, `status` (`pending`, `in_progress`, `done`)
+  - Task attributes: `title`, `description`, `due_date`, `status` (`pending`, `in_progress`, `completed`)
   - Soft deletion of tasks (using a `deleted_at` column)
   - Pagination and filtering by status and due_date
 - **Comments**
